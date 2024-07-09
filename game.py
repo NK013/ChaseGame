@@ -9,6 +9,8 @@ HEIGHT = 600
 
 background = Actor("background")
 
+game_state = "start_screen"
+
 score = 0
 mins = input("Wie lange möchtest du spielen? : ")
 ticks = int(mins) * 60 * 60 #: 60 Ticks = 1 second | 1*60*60 = 1 minute
@@ -31,16 +33,31 @@ coin.y = 300
 
 
 def draw():
+
     screen.clear()
     background.draw()
-    player.draw()
-    player2.draw()
-    enemy.draw()
-    coin.draw()
-    score_string = str(score)
-    screen.draw.text("Score: " + score_string, (10, 10), color='white')
-    time_string = str(round(ticks / 60))
-    screen.draw.text("Time: " + time_string + "s", (90, 10), color='white')
+
+    if game_state == "game":
+        player.draw()
+        player2.draw()
+        enemy.draw()
+        coin.draw()
+        score_string = str(score)
+        screen.draw.text("Score: " + score_string, (10, 10), color='white')
+        time_string = str(round(ticks / 60))
+        screen.draw.text("Time: " + time_string + "s", (90, 10), color='white')
+
+    if game_state == "start_screen":
+        screen.draw.text("Drücke 'SPACE' um das Spiel zu starten!", (WIDTH/2 - 200, HEIGHT/2 - 100), fontname="fredoka_condensed-bold", color='white')
+        #screen.draw.text("Wie lange möchtest du spielen?", (WIDTH/2 - 125, HEIGHT/2 - 50), color='white')
+        #textfield
+        screen.draw.text("Spieler 1:\n [W] - Oben\n [S] - Unten\n [A] - Links\n [R] - Rechts", (50 , HEIGHT - 150), color='white')
+        screen.draw.text("Spieler 2:\n [I] - Oben\n [K] - Unten\n [J] - Links\n [L] - Rechts", (WIDTH - 150 , HEIGHT - 150), color='white')
+
+    if game_state == "gameover_screen":
+        screen.draw.text("Drücke 'SPACE' um das Spiel zu schließen!", (WIDTH/2 - 150, HEIGHT/2 - 100), fontname="fredoka_condensed-bold", color='white')
+        screen.draw.text("Finaler Score: " + str(score), (WIDTH/2 - 50, HEIGHT/2 - 25), color='white')
+        screen.draw.text("Übrige Zeit: " + str(round(ticks / 60)) + "s", (WIDTH/2 - 50, HEIGHT/2 - 0), color='white')
 
 
 def handleTicks():
@@ -52,13 +69,13 @@ def handleTicks():
 
 def handlePlayerMoving():
 
-    if keyboard.right:
+    if keyboard.l:
         player.x = player.x + 4
-    if keyboard.left:
+    if keyboard.j:
         player.x = player.x - 4
-    if keyboard.down:
+    if keyboard.k:
         player.y = player.y + 4
-    if keyboard.up:
+    if keyboard.i:
         player.y = player.y - 4
 
     if keyboard.d:
@@ -116,31 +133,31 @@ def handleEnemyMoving():
 
 def handleGameover():
 
-    global score, ticks
+    global score, ticks, game_state
 
     if player2.colliderect(enemy):
+        game_state = "gameover_screen"
         print()
         print("Game Over! (Death - Player 2)")
         print(" - Final Score:", score)
         print(" - Remeaning Time: " + str(round(ticks / 60)) + "s")
         print()
-        exit()
     
     if player.colliderect(enemy):
+        game_state = "gameover_screen"
         print()
         print("Game Over! (Death - Player 1)")
         print(" - Final Score:", score)
         print(" - Remeaning Time: " + str(round(ticks / 60)) + "s")
         print()
-        exit()
 
     if ticks <= 0:
+        game_state = "gameover_screen"
         print()
         print("Game Over! (Time)")
         print(" - Final Score:", score)
         print(" - Remeaning Time: " + str(round(ticks / 60)) + "s")
         print()
-        exit()
 
 
 def handleCoins():
@@ -154,20 +171,35 @@ def handleCoins():
 
 
 def update():
+    global game_state
 
-    handleTicks()
-    handlePlayerMoving()
-    handleEnemyMoving()
-    handleCoins()
-    handleGameover()
+    if game_state == "game":
+        handleTicks()
+        handlePlayerMoving()
+        handleEnemyMoving()
+        handleCoins()
+        handleGameover()
+    
+    if game_state == "start_screen":
+        if keyboard.space:
+            game_state = "game"
+    
+    if game_state == "gameover_screen":
+        if keyboard.space:
+            print("Spiel wird geschlossen!")
+            exit()
 
 
-def startGame():
+def startGame(game_state):
 
-    print()
-    print("Spiel wird gestartet...")
-    print()
+    if game_state == "start_screen":
+        pgzrun.go()
 
-    pgzrun.go()
+    if game_state == "starting":
+        print()
+        print("Spiel wird gestartet...")
+        print()
 
-startGame()
+        pgzrun.go()
+
+startGame("start_screen")
