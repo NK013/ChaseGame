@@ -91,14 +91,27 @@ def handlePlayerMoving():
 
 def handleEnemyMoving():
 
-    if enemy.x < player2.x:
-        enemy.x = enemy.x + 0.8
-    if enemy.x > player2.x:
-        enemy.x = enemy.x - 0.8
-    if enemy.y < player2.y:
-        enemy.y = enemy.y + 0.8
-    if enemy.y > player2.y:
-        enemy.y = enemy.y - 0.8
+    d_p1 =  enemy.distance_to(player)
+    d_p2 =  enemy.distance_to(player2)
+
+    if d_p1 > d_p2:
+        if enemy.x < player2.x:
+            enemy.x = enemy.x + 0.8
+        if  enemy.x > player2.x:
+            enemy.x = enemy.x - 0.8
+        if enemy.y < player2.y:
+            enemy.y = enemy.y + 0.8
+        if enemy.y > player2.y:
+            enemy.y = enemy.y - 0.8
+    else:
+        if enemy.x < player.x:
+            enemy.x = enemy.x + 0.8
+        if  enemy.x > player.x:
+            enemy.x = enemy.x - 0.8
+        if enemy.y < player.y:
+            enemy.y = enemy.y + 0.8
+        if enemy.y > player.y:
+            enemy.y = enemy.y - 0.8
 
 
 def handleGameover():
@@ -152,7 +165,7 @@ def update():
 def startGame():
 
     print()
-    print("Spiel wird gestratet...")
+    print("Spiel wird gestartet...")
     print()
 
     pgzrun.go()
