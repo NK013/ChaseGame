@@ -10,7 +10,7 @@ HEIGHT = 600
 background = Actor("background")
 
 score = 0
-mins = input("Wie lange möchtest du spielen? (In Minuten) : ")
+mins = input("Wie lange möchtest du spielen? : ")
 ticks = int(mins) * 60 * 60 #: 60 Ticks = 1 second | 1*60*60 = 1 minute
 
 player = Actor("player_1")
