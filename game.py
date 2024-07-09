@@ -10,13 +10,14 @@ HEIGHT = 600
 background = Actor("background")
 
 score = 0
-ticks = 2500
+mins = input("Wie lange möchtest du spielen? : ")
+ticks = int(mins) * 60 * 60 #: 60 Ticks = 1 second | 1*60*60 = 1 minute
 
-player = Actor("player1")
+player = Actor("player_1")
 player.x = 450
 player.y = 200
 
-player2 = Actor("player2")
+player2 = Actor("player_2")
 player2.x = 150
 player2.y = 200
 
@@ -24,7 +25,10 @@ enemy = Actor("enemy")
 enemy.x = 250
 enemy.y = 525
 
-coin = Actor("coin", pos=(300,300))
+coin = Actor("coin")
+coin.x = 300
+coin.y = 300
+
 
 def draw():
     screen.clear()
@@ -34,36 +38,19 @@ def draw():
     enemy.draw()
     coin.draw()
     score_string = str(score)
-    screen.draw.text("Score: " + score_string, (0,0), color='white')
-    time_string = str(round(ticks))
-    screen.draw.text("Ticks: " + time_string, (100,0), color='white')
+    screen.draw.text("Score: " + score_string, (10, 10), color='white')
+    time_string = str(round(ticks / 60))
+    screen.draw.text("Time: " + time_string + "s", (90, 10), color='white')
 
-def update():
 
-    global score, ticks
+def handleTicks():
+
+    global ticks
 
     ticks = ticks - 1
-    if ticks == 2000:
-        print()
-        print("Noch 2000 Ticks!")
-    elif ticks == 1500:
-        print()
-        print("Noch 2000 Ticks!")
-    elif ticks == 1000:
-        print()
-        print("Noch 1000 Ticks!")
-    elif ticks == 500:
-        print()
-        print("Noch 500 Ticks!")
-    elif ticks == 200:
-        print()
-        print("Noch 200 Ticks!")
-    elif ticks <= 0:
-        print()
-        print("Game Over! (Time)")
-        print("Final Score:", score)
-        print()
-        exit()
+
+
+def handlePlayerMoving():
 
     if keyboard.right:
         player.x = player.x + 4
@@ -82,12 +69,6 @@ def update():
         player2.y = player2.y + 4
     if keyboard.w:
         player2.y = player2.y - 4
-    if player2.colliderect(enemy):
-        print()
-        print("Game Over! (Death - Player 2)")
-        print("Final Score:", score)
-        print()
-        exit()
 
     if player.x > WIDTH:
         player.x = 0
@@ -107,25 +88,73 @@ def update():
     if player2.y > HEIGHT:
         player2.y = 0
 
+
+def handleEnemyMoving():
+
     if enemy.x < player2.x:
-        enemy.x = enemy.x + 1.5
+        enemy.x = enemy.x + 0.8
     if enemy.x > player2.x:
-        enemy.x = enemy.x - 1.5
+        enemy.x = enemy.x - 0.8
     if enemy.y < player2.y:
-        enemy.y = enemy.y + 1.5
+        enemy.y = enemy.y + 0.8
     if enemy.y > player2.y:
-        enemy.y = enemy.y - 1.5
+        enemy.y = enemy.y - 0.8
+
+
+def handleGameover():
+
+    global score, ticks
+
+    if player2.colliderect(enemy):
+        print()
+        print("Game Over! (Death - Player 2)")
+        print(" - Final Score:", score)
+        print(" - Remeaning Time: " + str(round(ticks / 60)) + "s")
+        print()
+        exit()
+    
     if player.colliderect(enemy):
         print()
         print("Game Over! (Death - Player 1)")
-        print("Final Score:", score)
+        print(" - Final Score:", score)
+        print(" - Remeaning Time: " + str(round(ticks / 60)) + "s")
         print()
         exit()
+
+    if ticks <= 0:
+        print()
+        print("Game Over! (Time)")
+        print(" - Final Score:", score)
+        print(" - Remeaning Time: " + str(round(ticks / 60)) + "s")
+        print()
+        exit()
+
+
+def handleCoins():
+
+    global score
 
     if coin.colliderect(player) or coin.colliderect(player2):
         coin.x = random.randint(0, WIDTH)
         coin.y = random.randint(0, HEIGHT)
         score = score + 1
-        print("Score:", score)
 
-pgzrun.go()
+
+def update():
+
+    handleTicks()
+    handlePlayerMoving()
+    handleEnemyMoving()
+    handleCoins()
+    handleGameover()
+
+
+def startGame():
+
+    print()
+    print("Spiel wird gestratet...")
+    print()
+
+    pgzrun.go()
+
+startGame()
